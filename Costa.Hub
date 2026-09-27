@@ -1,0 +1,334 @@
+-- ========================================================
+-- COSTA HUB - Roube um Ovo (Painel Compacto)
+-- ========================================================
+
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+
+-- Destruir interface antiga se re-executado
+if CoreGui:FindFirstChild("CostaHubGui") then
+    CoreGui.CostaHubGui:Destroy()
+end
+
+-- ScreenGui Principal
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "CostaHubGui"
+Gui.Parent = CoreGui
+Gui.ResetOnSpawn = false
+
+-- ========================================================
+-- 1. TELA DE INJEÇÃO
+-- ========================================================
+local SplashText = Instance.new("TextLabel")
+SplashText.Name = "SplashText"
+SplashText.Size = UDim2.new(0, 500, 0, 80)
+SplashText.Position = UDim2.new(0.5, -250, 0.4, -40)
+SplashText.BackgroundTransparency = 1
+SplashText.Text = "COSTA HUB"
+SplashText.TextColor3 = Color3.fromRGB(255, 255, 255)
+SplashText.TextSize = 40
+SplashText.Font = Enum.Font.GothamBold
+SplashText.Parent = Gui
+
+SplashText.TextTransparency = 1
+TweenService:Create(SplashText, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+task.wait(3.5)
+TweenService:Create(SplashText, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+task.wait(0.3)
+SplashText:Destroy()
+
+-- ========================================================
+-- 2. PAINEL PRINCIPAL (Tamanho compacto: 260x240)
+-- ========================================================
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 260, 0, 240)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -120)
+MainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+MainFrame.Visible = true
+MainFrame.Parent = Gui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(35, 35, 45)
+MainStroke.Thickness = 1.2
+MainStroke.Parent = MainFrame
+
+local MainGradient = Instance.new("UIGradient")
+MainGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 26)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 13))
+})
+MainGradient.Rotation = 45
+MainGradient.Parent = MainFrame
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 34)
+Header.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 12)
+HeaderCorner.Parent = Header
+
+local HeaderFix = Instance.new("Frame")
+HeaderFix.Size = UDim2.new(1, 0, 0, 8)
+HeaderFix.Position = UDim2.new(0, 0, 1, -8)
+HeaderFix.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+HeaderFix.BorderSizePixel = 0
+HeaderFix.Parent = Header
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -16, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "COSTA HUB  <font color='#0099ff'>//</font>  Roube um Ovo"
+Title.RichText = true
+Title.TextColor3 = Color3.fromRGB(230, 230, 240)
+Title.TextSize = 11
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+local Divider = Instance.new("Frame")
+Divider.Size = UDim2.new(1, -20, 0, 1)
+Divider.Position = UDim2.new(0, 10, 0, 34)
+Divider.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+Divider.BorderSizePixel = 0
+Divider.Parent = MainFrame
+
+-- ========================================================
+-- 3. CONTAINER DE FUNÇÕES
+-- ========================================================
+local ContentMain = Instance.new("ScrollingFrame")
+ContentMain.Size = UDim2.new(1, -12, 1, -44)
+ContentMain.Position = UDim2.new(0, 6, 0, 38)
+ContentMain.BackgroundTransparency = 1
+ContentMain.BorderSizePixel = 0
+ContentMain.ScrollBarThickness = 2
+ContentMain.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+ContentMain.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ContentMain.CanvasSize = UDim2.new(0, 0, 0, 0)
+ContentMain.Visible = true
+ContentMain.Parent = MainFrame
+
+local UIList1 = Instance.new("UIListLayout")
+UIList1.SortOrder = Enum.SortOrder.LayoutOrder
+UIList1.Padding = UDim.new(0, 6)
+UIList1.Parent = ContentMain
+
+-- ========================================================
+-- 4. LOGO PERSONALIZADA ("Costa")
+-- ========================================================
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "CostaLogoButton"
+ToggleButton.Size = UDim2.new(0, 48, 0, 48)
+ToggleButton.Position = UDim2.new(1, -58, 0, 10)
+ToggleButton.Text = "Costa"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 11
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Active = true
+ToggleButton.Draggable = false
+ToggleButton.Parent = Gui
+
+local TextStroke = Instance.new("UIStroke")
+TextStroke.Color = Color3.fromRGB(0, 0, 0)
+TextStroke.Thickness = 1.5
+TextStroke.Parent = ToggleButton
+
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(1, 0)
+LogoCorner.Parent = ToggleButton
+
+local LogoStroke = Instance.new("UIStroke")
+LogoStroke.Color = Color3.fromRGB(50, 50, 65)
+LogoStroke.Thickness = 1.2
+LogoStroke.Parent = ToggleButton
+
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- ========================================================
+-- 5. FUNÇÕES DO HUB
+-- ========================================================
+local function CreateToggle(name, callback)
+    local toggleState = false
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, -4, 0, 32)
+    Button.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+    Button.BackgroundTransparency = 0.2
+    Button.Text = "    " .. name
+    Button.TextColor3 = Color3.fromRGB(200, 200, 210)
+    Button.TextSize = 11
+    Button.Font = Enum.Font.GothamMedium
+    Button.TextXAlignment = Enum.TextXAlignment.Left
+    Button.AutoButtonColor = false
+    Button.Parent = ContentMain
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = Button
+
+    local BtnStroke = Instance.new("UIStroke")
+    BtnStroke.Name = "DefaultStroke"
+    BtnStroke.Color = Color3.fromRGB(35, 35, 48)
+    BtnStroke.Thickness = 1
+    BtnStroke.Transparency = 0.3
+    BtnStroke.Parent = Button
+
+    local SwitchBase = Instance.new("Frame")
+    SwitchBase.Size = UDim2.new(0, 32, 0, 18)
+    SwitchBase.Position = UDim2.new(1, -40, 0.5, -9)
+    SwitchBase.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+    SwitchBase.BorderSizePixel = 0
+    SwitchBase.Parent = Button
+
+    local BaseCorner = Instance.new("UICorner")
+    BaseCorner.CornerRadius = UDim.new(1, 0)
+    BaseCorner.Parent = SwitchBase
+
+    local SwitchStroke = Instance.new("UIStroke")
+    SwitchStroke.Color = Color3.fromRGB(45, 45, 60)
+    SwitchStroke.Thickness = 1
+    SwitchStroke.Parent = SwitchBase
+
+    local SwitchBall = Instance.new("Frame")
+    SwitchBall.Size = UDim2.new(0, 12, 0, 12)
+    SwitchBall.Position = UDim2.new(0, 3, 0.5, -6)
+    SwitchBall.BackgroundColor3 = Color3.fromRGB(200, 205, 220)
+    SwitchBall.BorderSizePixel = 0
+    SwitchBall.Parent = SwitchBase
+
+    local BallCorner = Instance.new("UICorner")
+    BallCorner.CornerRadius = UDim.new(1, 0)
+    BallCorner.Parent = SwitchBall
+
+    Button.MouseButton1Click:Connect(function()
+        toggleState = not toggleState
+        
+        local targetBaseColor, targetBallColor, targetBallPos
+        if toggleState then
+            targetBaseColor = Color3.fromRGB(0, 140, 255)
+            targetBallColor = Color3.fromRGB(255, 255, 255)
+            targetBallPos = UDim2.new(1, -15, 0.5, -6)
+        else
+            targetBaseColor = Color3.fromRGB(28, 28, 38)
+            targetBallColor = Color3.fromRGB(200, 205, 220)
+            targetBallPos = UDim2.new(0, 3, 0.5, -6)
+        end
+
+        TweenService:Create(SwitchBase, TweenInfo.new(0.25), {BackgroundColor3 = targetBaseColor}):Play()
+        TweenService:Create(SwitchBall, TweenInfo.new(0.25), {BackgroundColor3 = targetBallColor, Position = targetBallPos}):Play()
+
+        callback(toggleState)
+    end)
+end
+
+-- 1. Anti-Lag
+CreateToggle("Anti-Lag", function(enabled)
+    if enabled then
+        task.defer(function()
+            Lighting.GlobalShadows = false
+            Lighting.FogEnd = 9e9
+            if Lighting:FindFirstChildOfClass("Sky") then
+                Lighting:FindFirstChildOfClass("Sky"):Destroy()
+            end
+            for _, v in pairs(Workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.SmoothPlastic
+                    v.Reflectance = 0
+                elseif v:IsA("Decal") or v:IsA("Texture") then
+                    v:Destroy()
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Fire") or v:IsA("Smoke") then
+                    v.Enabled = false
+                end
+            end
+        end)
+    end
+end)
+
+-- 2. Infinite Jump
+local InfJumpEnabled = false
+CreateToggle("Infinite Jump", function(enabled)
+    InfJumpEnabled = enabled
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if InfJumpEnabled then
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if humanoid and rootPart then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                rootPart.AssemblyLinearVelocity = Vector3.new(
+                    rootPart.AssemblyLinearVelocity.X, 
+                    50, 
+                    rootPart.AssemblyLinearVelocity.Z
+                )
+            end
+        end
+    end
+end)
+
+-- 3. Anti Ragdoll
+local AntiRagdollEnabled = false
+CreateToggle("Anti Ragdoll", function(enabled)
+    AntiRagdollEnabled = enabled
+end)
+
+RunService.Heartbeat:Connect(function()
+    if AntiRagdollEnabled and LocalPlayer.Character then
+        local character = LocalPlayer.Character
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            local currentState = humanoid:GetState()
+            if currentState == Enum.HumanoidStateType.Ragdoll or 
+               currentState == Enum.HumanoidStateType.FallingDown or 
+               currentState == Enum.HumanoidStateType.PlatformStanding then
+                humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                humanoid.PlatformStand = false
+            end
+        end
+
+        for _, obj in pairs(character:GetDescendants()) do
+            if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") then
+                obj.Enabled = false
+            end
+        end
+    end
+end)
+
+-- 4. Anti Hit
+local AntiHitEnabled = false
+CreateToggle("Anti Hit", function(enabled)
+    AntiHitEnabled = enabled
+end)
+
+RunService.Heartbeat:Connect(function()
+    if AntiHitEnabled and LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Health < humanoid.MaxHealth and humanoid.Health > 0 then
+            humanoid.Health = humanoid.MaxHealth
+        end
+    end
+end)
